@@ -24,11 +24,7 @@ const createProject = async (req, res, next) => {
 
 const getProjects = async (req, res, next) => {
     try {
-        const projects = await Project.find({userId: req.user._id}).populate("userId", "name email")
-
-        if(projects.isActive === false){
-            return res.status(403).json({success: false, message: "Project is inactive"})
-        }
+        const projects = await Project.find({userId: req.user._id, isActive: true}).populate("userId", "name email")
         
         if (!projects || projects.length === 0) {
             return res.status(404).json({success: false, message: "No projects found"})

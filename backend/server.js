@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.use("/api/auth", authRoutes)
 app.use("/api/projects", projectRoutes)
 
-app.use(errorHandler())
+// app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000;
 
