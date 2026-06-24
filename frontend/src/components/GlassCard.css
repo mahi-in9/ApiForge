@@ -1,0 +1,22 @@
+.glass-card {
+  /* Use the variables you set up in index.css */
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-glass);
+  
+  /* The Magic Blur Effect */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* For Safari */
+  
+  /* Basic styling */
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  
+  /* Smooth transition for hover effects later */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 240, 255, 0.3); /* Subtle neon blue border on hover */
+  box-shadow: 0 10px 40px 0 rgba(0, 240, 255, 0.1);
+}

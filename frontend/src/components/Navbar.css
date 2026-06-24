@@ -1,0 +1,65 @@
+.navbar {
+  height: 70px;
+  background-color: rgba(15, 17, 21, 0.5);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-glass);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 30px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.navbar-search .search-input {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: var(--text-main);
+  width: 250px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.navbar-search .search-input:focus {
+  border-color: var(--text-muted);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.navbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.user-icon {
+  color: var(--accent-neon);
+}
+
+.logout-button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
+}

@@ -1,0 +1,62 @@
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  background-color: rgba(15, 17, 21, 0.8);
+  border-right: 1px solid var(--border-glass);
+  backdrop-filter: blur(20px);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 40px;
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-logo .neon-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-neon);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--accent-neon);
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+.nav-item.active {
+  border-left: 3px solid var(--accent-neon);
+  box-shadow: inset 20px 0 20px -20px rgba(0, 240, 255, 0.2); 
+}

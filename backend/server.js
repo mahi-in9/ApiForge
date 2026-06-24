@@ -15,7 +15,10 @@ const app = express();
 connectDB()
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    based: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 
 app.get('/', (req, res) => {
     res.send("API-Forge Server is running!");
