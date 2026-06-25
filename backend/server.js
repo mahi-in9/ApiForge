@@ -5,8 +5,9 @@ const cors = require("cors");
 
 const {connectDB} = require("./src/config/db");
 
-const authRoutes = require("./src/routes/auth.route");
-const projectRoutes = require("./src/routes/project.route");
+const authRoutes = require("./src/routes/system/auth.route");
+const projectRoutes = require("./src/routes/system/project.route");
+const schemaRoutes = require("./src/routes/system/schemaRoutes");
 
 const errorHandler = require("./src/middlewares/error.handler")
 
@@ -17,7 +18,7 @@ connectDB()
 app.use(express.json());
 app.use(cors({
     based: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 }));
 
 app.get('/', (req, res) => {
@@ -26,7 +27,7 @@ app.get('/', (req, res) => {
 
 app.use("/api/auth", authRoutes)
 app.use("/api/projects", projectRoutes)
-
+app.use("/api/schemas", schemaRoutes)
 // app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000;
