@@ -31,7 +31,7 @@ const Navbar = () => {
       <div className="navbar-profile">
         <div className="user-info">
           <User size={18} className="user-icon" />
-          <span className="user-name">{user?.username || 'Developer'}</span>
+          <span className="user-name">{user?.name || user?.title || 'Developer'}</span>
         </div>
         <button onClick={handleLogout} className="logout-button" title="Logout">
           <LogOut size={18} />

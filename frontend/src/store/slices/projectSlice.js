@@ -46,6 +46,7 @@ const initialState = {
   items: [],
   isLoading: false,
   error: null,
+  searchQuery: '',
 };
 
 const projectSlice = createSlice({
@@ -85,10 +86,16 @@ const projectSlice = createSlice({
         state.error = action.payload;
       })
       // Delete Project
+      .addCase(deleteProject.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(deleteProject.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.items = state.items.filter((p) => p._id !== action.payload);
       })
       .addCase(deleteProject.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload;
       });
   },

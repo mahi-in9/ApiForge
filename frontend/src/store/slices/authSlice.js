@@ -1,6 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
+// Safely decode a JWT payload without a library
+const decodeToken = (token) => {
+  try {
+    const base64Payload = token.split('.')[1];
+    const payload = JSON.parse(atob(base64Payload));
+    return payload;
+  } catch {
+    return null;
+  }
+};
+
 // Async Thunks
 export const login = createAsyncThunk(
   'auth/login',
@@ -28,12 +39,14 @@ export const register = createAsyncThunk(
   }
 );
 
+const storedToken = localStorage.getItem('token');
+
 const initialState = {
-  user: null,
-  token: localStorage.getItem('token') || null,
+  user: storedToken ? decodeToken(storedToken) : null,
+  token: storedToken || null,
   isLoading: false,
   error: null,
-  isAuthenticated: !!localStorage.getItem('token')
+  isAuthenticated: !!storedToken,
 };
 
 const authSlice = createSlice({
@@ -61,8 +74,8 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
         state.token = action.payload.token;
+        state.user = decodeToken(action.payload.token);
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -76,8 +89,8 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
         state.token = action.payload.token;
+        state.user = decodeToken(action.payload.token);
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;

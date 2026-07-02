@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { store } from '../store/store';
+import { logout } from '../store/slices/authSlice';
 
 const api = axios.create({
   baseURL: 'http://localhost:5000',
@@ -17,6 +19,19 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Add a response interceptor to handle expired/invalid tokens globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token is expired or invalid — clear auth state and redirect
+      store.dispatch(logout());
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;
