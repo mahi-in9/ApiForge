@@ -8,6 +8,7 @@ const {connectDB} = require("./src/config/db");
 const authRoutes = require("./src/routes/system/auth.route");
 const projectRoutes = require("./src/routes/system/project.route");
 const schemaRoutes = require("./src/routes/system/schemaRoutes");
+const dynamicRoutes = require("./src/routes/tenant/dynamicRoutes");
 
 const errorHandler = require("./src/middlewares/error.handler")
 
@@ -27,8 +28,9 @@ app.get('/', (req, res) => {
 
 app.use("/api/auth", authRoutes)
 app.use("/api/projects", projectRoutes)
-// app.use("/api/schemas", schemaRoutes)
-// app.use(errorHandler)
+app.use("/api/schemas", schemaRoutes)
+app.use("/api/data", dynamicRoutes)
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000;
 

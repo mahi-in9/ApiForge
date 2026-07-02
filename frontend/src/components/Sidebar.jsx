@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Database, Key, Settings } from 'lucide-react';
+import { LayoutDashboard, Database, Settings, GitGraph } from 'lucide-react';
 import './Sidebar.css';
 
 const Sidebar = () => {
@@ -20,15 +20,20 @@ const Sidebar = () => {
           <span>Dashboard</span>
         </NavLink>
         
-        {/* Placeholders for future pages */}
-        <div className="nav-item">
+        <NavLink 
+          to="/schemas" 
+          className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+        >
           <Database size={20} />
           <span>Schema Builder</span>
-        </div>
-        <div className="nav-item">
-          <Key size={20} />
-          <span>API Keys</span>
-        </div>
+        </NavLink>
+        <NavLink 
+          to="/visual-studio" 
+          className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+        >
+          <GitGraph size={20} />
+          <span>Visual Studio</span>
+        </NavLink>
         <NavLink 
           to="/settings" 
           className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}

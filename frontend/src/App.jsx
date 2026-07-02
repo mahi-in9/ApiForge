@@ -4,6 +4,8 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import SchemaBuilder from './pages/SchemaBuilder';
+import VisualStudio from './pages/VisualStudio';
 import Settings from './pages/Settings';
 
 function App() {
@@ -16,8 +18,9 @@ function App() {
       <Route element={<PrivateRoute />}>
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/schemas" element={<SchemaBuilder />} />
+          <Route path="/visual-studio" element={<VisualStudio />} />
           <Route path="/settings" element={<Settings />} />
-          {/* Add SchemaBuilder, etc. here later */}
         </Route>
       </Route>
       

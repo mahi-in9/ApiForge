@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 
 
 const generateToken = async (user) => {
-    return jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "7d"})
+    return jwt.sign({ id: user._id, title: user.title, email: user.email }, process.env.JWT_SECRET, {expiresIn: "7d"})
 }
 
 const register = async (req, res, next) => {
@@ -14,7 +14,9 @@ const register = async (req, res, next) => {
         const existingUser = await User.findOne({email});
 
         if(existingUser) {
-            throw new Error("User already exists")
+            const error = new Error("User already exists");
+            error.status = 400;
+            throw error;
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -36,13 +38,17 @@ const login = async (req, res, next) => {
         const user = await User.findOne({email});
         
         if(!user) {
-            throw new Error("Invalid credentials")
+            const error = new Error("Invalid credentials");
+            error.status = 401;
+            throw error;
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch) {
-            throw new Error("Invalid credentials")
+            const error = new Error("Invalid credentials");
+            error.status = 401;
+            throw error;
         }
 
         const token = await generateToken(user);

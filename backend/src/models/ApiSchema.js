@@ -9,11 +9,47 @@ const fieldSchema = new mongoose.Schema({
     fieldType: {
         type: String,
         required: true,
-        enum: ["String", "Number", "Boolean", "Date", "Array", "Object"]
+        enum: ["String", "Number", "Boolean", "Date", "Array", "Object", "GeoPoint", "Address", "ObjectId"]
+    },
+    referenceTo: {
+        type: String, // Which collection this ObjectId points to
+        default: null
+    },
+    defaultValue: {
+        type: String,
+        default: null
     },
     isRequired: {
         type: Boolean,
         default: false
+    },
+    isUnique: {
+        type: Boolean,
+        default: false
+    },
+    isIndexed: {
+        type: Boolean,
+        default: false
+    },
+    enumValues: {
+        type: [String],
+        default: []
+    },
+    minLength: {
+        type: Number,
+        default: null
+    },
+    maxLength: {
+        type: Number,
+        default: null
+    },
+    min: {
+        type: Number,
+        default: null
+    },
+    max: {
+        type: Number,
+        default: null
     }
 }, { _id: false });
 

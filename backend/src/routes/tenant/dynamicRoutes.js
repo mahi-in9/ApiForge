@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-// authTenant = API-key guard for tenant (end-user) apps. NOT jwt protect.
 const { authTenant } = require('../../middlewares/authTenant');
-
-// dynamicValidator = checks req.body against the user-defined schema
 const dynamicValidator = require('../../middlewares/dynamicValidator');
-
 const dbService = require('../../services/dynamicDbService');
 
 // GET /api/data/:projectId/:collectionName
@@ -14,9 +10,37 @@ const dbService = require('../../services/dynamicDbService');
 router.get('/:projectId/:collectionName', authTenant, async (req, res, next) => {
     try {
         const { projectId, collectionName } = req.params;
-        const documents = await dbService.getAll(projectId, collectionName);
+        
+        // Parse Query Params (Engine V2)
+        const { page = 1, limit = 10, sort, ...filters } = req.query;
+        const pageNum = parseInt(page);
+        const limitNum = parseInt(limit);
+        const skip = (pageNum - 1) * limitNum;
+        
+        let sortObj = {};
+        if (sort) {
+            // e.g. sort=price:desc or sort=createdAt:-1
+            const [field, order] = sort.split(':');
+            sortObj[field] = order === 'desc' || order === '-1' ? -1 : 1;
+        }
+
+        const documents = await dbService.getAll(projectId, collectionName, {
+            query: filters,
+            sort: sortObj,
+            skip,
+            limit: limitNum
+        });
+        
+        const total = await dbService.count(projectId, collectionName, filters);
+
         res.status(200).json({
             success: true,
+            pagination: {
+                total,
+                page: pageNum,
+                limit: limitNum,
+                totalPages: Math.ceil(total / limitNum)
+            },
             count: documents.length,
             data: documents
         });
@@ -43,19 +67,22 @@ router.get('/:projectId/:collectionName/:id', authTenant, async (req, res, next)
 });
 
 // POST /api/data/:projectId/:collectionName
-// Creates a new document — validator runs before handler
+// Creates a new document
 router.post('/:projectId/:collectionName', authTenant, dynamicValidator, async (req, res, next) => {
     try {
         const { projectId, collectionName } = req.params;
         const document = await dbService.create(projectId, collectionName, req.body);
         res.status(201).json({ success: true, data: document });
     } catch (error) {
+        if (error.message.includes('Duplicate key error')) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
         next(error);
     }
 });
 
 // PUT /api/data/:projectId/:collectionName/:id
-// Updates an existing document — validator runs to check new body
+// Updates an existing document
 router.put('/:projectId/:collectionName/:id', authTenant, dynamicValidator, async (req, res, next) => {
     try {
         const { projectId, collectionName, id } = req.params;
@@ -67,12 +94,15 @@ router.put('/:projectId/:collectionName/:id', authTenant, dynamicValidator, asyn
 
         res.status(200).json({ success: true, data: document });
     } catch (error) {
+        if (error.message.includes('Duplicate key error')) {
+            return res.status(400).json({ success: false, message: error.message });
+        }
         next(error);
     }
 });
 
 // DELETE /api/data/:projectId/:collectionName/:id
-// Deletes a document — no validator (no body to validate)
+// Deletes a document
 router.delete('/:projectId/:collectionName/:id', authTenant, async (req, res, next) => {
     try {
         const { projectId, collectionName, id } = req.params;

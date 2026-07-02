@@ -14,9 +14,11 @@ const protect = async (req, res, next) => {
         }
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded.id).select("-password");
-        if(!user) throw new Error("Invalid user")
-        req.user = user
-        next();
+        if (!user) {
+            return res.status(401).json({ success: false, message: "User no longer exists" });
+        }
+        req.user = user;
+        return next(); // Explicit return stops execution
     } catch (error) {
         console.error(error);
         return res.status(401).json({ success: false, message: "Not authorized, token failed" });

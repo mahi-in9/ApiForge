@@ -32,3 +32,35 @@ body {
     radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.08), transparent 25%);
   background-attachment: fixed;
 }
+
+/* React Flow Overrides for Light/Dark mode support */
+.react-flow__controls {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glass) !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+.react-flow__controls-button {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-glass) !important;
+  fill: var(--text-main) !important;
+  color: var(--text-main) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(0, 136, 255, 0.1) !important;
+}
+
+.react-flow__controls-button svg {
+  fill: var(--text-main) !important;
+}

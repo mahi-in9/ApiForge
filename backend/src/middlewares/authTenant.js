@@ -9,7 +9,7 @@ const authTenant = async (req, res, next) => {
 
         const apiKey = authHeader.split(" ")[1];
 
-        const projectId = req.params.projectId || req.body.projectId;
+        const projectId = req.params.projectId;
         
         if (!projectId) {
             return res.status(400).json({success: false, message: "Project ID is required"});

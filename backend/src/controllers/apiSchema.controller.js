@@ -1,5 +1,6 @@
 const ApiSchema = require("../models/ApiSchema");
 const Project = require("../models/Project");
+const { getNativeDB } = require("../config/db");
 
 const createApiSchema = async (req, res, next) => {
     try {
@@ -24,6 +25,29 @@ const createApiSchema = async (req, res, next) => {
         });
 
         await apiSchema.save();
+
+        // Engine V2 & V3: Build unique and standard indexes in the native MongoDB collection
+        const db = getNativeDB();
+        const colName = `${projectId}_${collectionName}`;
+        const col = db.collection(colName);
+
+        const uniqueFields = fields.filter(f => f.isUnique);
+        for (const field of uniqueFields) {
+            // Ensure unique index exists. Background true prevents locking the DB.
+            await col.createIndex(
+                { [field.fieldName]: 1 },
+                { unique: true, background: true }
+            );
+        }
+
+        const indexedFields = fields.filter(f => f.isIndexed && !f.isUnique);
+        for (const field of indexedFields) {
+            // Ensure standard index exists for faster queries.
+            await col.createIndex(
+                { [field.fieldName]: 1 },
+                { background: true }
+            );
+        }
 
         res.status(201).json({success: true, data: apiSchema});
         

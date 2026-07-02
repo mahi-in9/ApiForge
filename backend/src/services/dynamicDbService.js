@@ -2,13 +2,11 @@ const { getNativeDB } = require('../config/db');
 const { ObjectId } = require('mongodb');
 
 // Namespace collections per project to prevent data leakage between tenants.
-// e.g., projectId "686aaa" + "products" → actual collection "686aaa_products"
 const buildCollectionName = (projectId, collectionName) => {
     return `${projectId}_${collectionName}`;
 };
 
 // Safely convert a string ID to MongoDB ObjectId.
-// Returns null if the string is not a valid 24-char hex (so callers send 404).
 const toObjectId = (id) => {
     try {
         return new ObjectId(id);
@@ -18,11 +16,33 @@ const toObjectId = (id) => {
 };
 
 // GET all documents in a collection
-const getAll = async (projectId, collectionName) => {
+const getAll = async (projectId, collectionName, queryParams = {}) => {
+    const { query = {}, sort = {}, skip = 0, limit = 0 } = queryParams;
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
-    // find({}) = no filter = all documents. toArray() resolves the cursor.
-    return await col.find({}).toArray();
+
+    let cursor = col.find(query);
+
+    if (Object.keys(sort).length > 0) {
+        cursor = cursor.sort(sort);
+    }
+
+    if (skip > 0) {
+        cursor = cursor.skip(skip);
+    }
+
+    if (limit > 0) {
+        cursor = cursor.limit(limit);
+    }
+
+    return await cursor.toArray();
+};
+
+// Engine V2: Count total documents for pagination calculations
+const count = async (projectId, collectionName, query = {}) => {
+    const db = getNativeDB();
+    const col = db.collection(buildCollectionName(projectId, collectionName));
+    return await col.countDocuments(query);
 };
 
 // GET one document by its _id
@@ -31,7 +51,7 @@ const getById = async (projectId, collectionName, id) => {
     const col = db.collection(buildCollectionName(projectId, collectionName));
 
     const objectId = toObjectId(id);
-    if (!objectId) return null; // malformed id → caller sends 404
+    if (!objectId) return null;
 
     return await col.findOne({ _id: objectId });
 };
@@ -41,16 +61,22 @@ const create = async (projectId, collectionName, data) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
 
-    // Timestamps after ...data so server values always win over user-sent ones
     const doc = { ...data, createdAt: new Date(), updatedAt: new Date() };
-
-    const result = await col.insertOne(doc);
-
-    // insertOne only returns { insertedId }, not the full doc. Reconstruct it.
-    return { _id: result.insertedId, ...doc };
+    
+    try {
+        const result = await col.insertOne(doc);
+        return { _id: result.insertedId, ...doc };
+    } catch (error) {
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue || {})[0] || 'unknown';
+            const value = (error.keyValue || {})[field] || 'unknown';
+            throw new Error(`Duplicate key error: A record with ${field}='${value}' already exists.`);
+        }
+        throw error;
+    }
 };
 
-// PUT — partially update a document using $set (preserves unmentioned fields)
+// PUT — partially update a document using $set
 const updateById = async (projectId, collectionName, id, data) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
@@ -58,13 +84,20 @@ const updateById = async (projectId, collectionName, id, data) => {
     const objectId = toObjectId(id);
     if (!objectId) return null;
 
-    // $set is critical — without it, the entire document would be replaced
-    // returnDocument: 'after' returns the updated version, not the pre-update one
-    return await col.findOneAndUpdate(
-        { _id: objectId },
-        { $set: { ...data, updatedAt: new Date() } },
-        { returnDocument: 'after' }
-    );
+    try {
+        return await col.findOneAndUpdate(
+            { _id: objectId },
+            { $set: { ...data, updatedAt: new Date() } },
+            { returnDocument: 'after' }
+        );
+    } catch (error) {
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue || {})[0] || 'unknown';
+            const value = (error.keyValue || {})[field] || 'unknown';
+            throw new Error(`Duplicate key error: A record with ${field}='${value}' already exists.`);
+        }
+        throw error;
+    }
 };
 
 // DELETE — remove a document by ID
@@ -73,10 +106,10 @@ const deleteById = async (projectId, collectionName, id) => {
     const col = db.collection(buildCollectionName(projectId, collectionName));
 
     const objectId = toObjectId(id);
-    if (!objectId) return 0; // 0 = nothing deleted → caller sends 404
+    if (!objectId) return 0;
 
     const result = await col.deleteOne({ _id: objectId });
-    return result.deletedCount; // 1 = deleted, 0 = not found
+    return result.deletedCount;
 };
 
-module.exports = { getAll, getById, create, updateById, deleteById };
+module.exports = { getAll, getById, create, updateById, deleteById, count };
