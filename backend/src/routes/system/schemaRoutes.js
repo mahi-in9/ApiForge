@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const {createApiSchema, getApiSchemas, deleteApiSchema} = require("../../controllers/apiSchema.controller");
-const {protect} = require("../../middlewares/auth.middleware");
+const {protect} = require("../../middlewares/protect");
 
 router.post("/", protect, createApiSchema);
 router.get("/:projectId", protect, getApiSchemas);

@@ -1,5 +1,5 @@
-const ApiSchema = require("../models/apiSchema.model");
-const Project = require("../models/project.model");
+const ApiSchema = require("../models/ApiSchema");
+const Project = require("../models/Project");
 
 const createApiSchema = async (req, res, next) => {
     try {

@@ -32,7 +32,7 @@ const ApiSchema = new mongoose.Schema({
     fields: [fieldSchema]
 }, { timestamps: true });
 
-apiSchema.index({ projectId: 1, collectionName: 1 }, { unique: true });
+ApiSchema.index({ projectId: 1, collectionName: 1 }, { unique: true });
 
 const ApiSchema = mongoose.model("ApiSchema", ApiSchema);
 

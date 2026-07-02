@@ -17,7 +17,7 @@ connectDB()
 
 app.use(express.json());
 app.use(cors({
-    based: process.env.CLIENT_URL,
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 }));
 
