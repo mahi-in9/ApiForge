@@ -17,7 +17,7 @@ const fieldSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
-const ApiSchema = new mongoose.Schema({
+const apiSchema = new mongoose.Schema({
     projectId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project",
@@ -32,8 +32,8 @@ const ApiSchema = new mongoose.Schema({
     fields: [fieldSchema]
 }, { timestamps: true });
 
-ApiSchema.index({ projectId: 1, collectionName: 1 }, { unique: true });
+apiSchema.index({ projectId: 1, collectionName: 1 }, { unique: true });
 
-const ApiSchema = mongoose.model("ApiSchema", ApiSchema);
+const ApiSchema = mongoose.model("ApiSchema", apiSchema);
 
 module.exports = ApiSchema;

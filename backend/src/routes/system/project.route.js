@@ -1,4 +1,4 @@
-const {createProject, getProjects, deleteProject} = require("../../controllers/auth.controller")
+const {createProject, getProjects, deleteProject} = require("../../controllers/project.controller")
 const {protect} = require("../../middlewares/protect")
 
 const router = require("express").Router();
