@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// ─── Field sub-document ──────────────────────────────────────────────────────
 const fieldSchema = new mongoose.Schema({
     fieldName: {
         type: String,
@@ -53,6 +54,51 @@ const fieldSchema = new mongoose.Schema({
     }
 }, { _id: false });
 
+// ─── Relationship sub-document ───────────────────────────────────────────────
+const relationshipSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    type: {
+        type: String,
+        required: true,
+        enum: ["one-to-one", "one-to-many", "many-to-one", "many-to-many"]
+    },
+    fromField: {
+        type: String,
+        required: true
+        // fieldName in THIS collection that holds the reference
+    },
+    toCollection: {
+        type: String,
+        required: true
+        // target collection name (lowercase)
+    },
+    toField: {
+        type: String,
+        default: null
+        // field in target collection (used for many-to-many join reference)
+    },
+    onDelete: {
+        type: String,
+        enum: ["cascade", "restrict", "set-null"],
+        default: "restrict"
+    },
+    populatePath: {
+        type: String,
+        default: null
+        // virtual path name to use in ?populate= query param
+    },
+    label: {
+        type: String,
+        default: null
+        // human-readable label shown on the visual edge
+    }
+}, { _id: true }); // keep _id so we can delete individual relationships
+
+// ─── Root ApiSchema document ─────────────────────────────────────────────────
 const apiSchema = new mongoose.Schema({
     projectId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -65,7 +111,13 @@ const apiSchema = new mongoose.Schema({
         trim: true,
         lowercase: true
     },
-    fields: [fieldSchema]
+    fields: [fieldSchema],
+    relationships: [relationshipSchema],
+    // Persisted canvas position for the Visual Schema Designer
+    nodePosition: {
+        x: { type: Number, default: 0 },
+        y: { type: Number, default: 0 }
+    }
 }, { timestamps: true });
 
 apiSchema.index({ projectId: 1, collectionName: 1 }, { unique: true });

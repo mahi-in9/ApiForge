@@ -7,25 +7,35 @@ import Dashboard from './pages/Dashboard';
 import SchemaBuilder from './pages/SchemaBuilder';
 import VisualStudio from './pages/VisualStudio';
 import Settings from './pages/Settings';
+import ApiPlayground from './pages/ApiPlayground';
+import Documentation from './pages/Documentation';
+import OnboardingModal from './components/OnboardingModal';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      
-      {/* Protected Routes wrapped in Layout */}
-      <Route element={<PrivateRoute />}>
-        <Route element={<Layout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/schemas" element={<SchemaBuilder />} />
-          <Route path="/visual-studio" element={<VisualStudio />} />
-          <Route path="/settings" element={<Settings />} />
+    <>
+      {/* Global onboarding overlay — rendered above all routes */}
+      <OnboardingModal />
+
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected Routes wrapped in Layout */}
+        <Route element={<PrivateRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/dashboard"     element={<Dashboard />} />
+            <Route path="/schemas"       element={<SchemaBuilder />} />
+            <Route path="/visual-studio" element={<VisualStudio />} />
+            <Route path="/playground"    element={<ApiPlayground />} />
+            <Route path="/docs"          element={<Documentation />} />
+            <Route path="/settings"      element={<Settings />} />
+          </Route>
         </Route>
-      </Route>
-      
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </>
   );
 }
 

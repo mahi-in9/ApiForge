@@ -1,6 +1,8 @@
 const { getNativeDB } = require('../config/db');
 const { ObjectId } = require('mongodb');
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 // Namespace collections per project to prevent data leakage between tenants.
 const buildCollectionName = (projectId, collectionName) => {
     return `${projectId}_${collectionName}`;
@@ -15,7 +17,7 @@ const toObjectId = (id) => {
     }
 };
 
-// GET all documents in a collection
+// ─── GET all documents ────────────────────────────────────────────────────────
 const getAll = async (projectId, collectionName, queryParams = {}) => {
     const { query = {}, sort = {}, skip = 0, limit = 0 } = queryParams;
     const db = getNativeDB();
@@ -23,29 +25,94 @@ const getAll = async (projectId, collectionName, queryParams = {}) => {
 
     let cursor = col.find(query);
 
-    if (Object.keys(sort).length > 0) {
-        cursor = cursor.sort(sort);
-    }
-
-    if (skip > 0) {
-        cursor = cursor.skip(skip);
-    }
-
-    if (limit > 0) {
-        cursor = cursor.limit(limit);
-    }
+    if (Object.keys(sort).length > 0) cursor = cursor.sort(sort);
+    if (skip > 0) cursor = cursor.skip(skip);
+    if (limit > 0) cursor = cursor.limit(limit);
 
     return await cursor.toArray();
 };
 
-// Engine V2: Count total documents for pagination calculations
+// ─── GET all documents WITH populate ($lookup aggregation) ────────────────────
+/**
+ * @param {string} projectId
+ * @param {string} collectionName
+ * @param {object} queryParams  - { query, sort, skip, limit }
+ * @param {string[]} populateFields - array of relationship populatePath names
+ * @param {object[]} relationships  - relationship definitions from ApiSchema
+ */
+const getWithPopulate = async (projectId, collectionName, queryParams = {}, populateFields = [], relationships = []) => {
+    const { query = {}, sort = {}, skip = 0, limit = 0 } = queryParams;
+    const db = getNativeDB();
+    const colName = buildCollectionName(projectId, collectionName);
+
+    const pipeline = [];
+
+    // Match stage (filtering)
+    if (Object.keys(query).length > 0) {
+        pipeline.push({ $match: query });
+    }
+
+    // Sort stage
+    if (Object.keys(sort).length > 0) {
+        pipeline.push({ $sort: sort });
+    }
+
+    // Skip + Limit for pagination
+    if (skip > 0) pipeline.push({ $skip: skip });
+    if (limit > 0) pipeline.push({ $limit: limit });
+
+    // $lookup stages for each requested populate field
+    for (const populatePath of populateFields) {
+        const rel = relationships.find(r => r.populatePath === populatePath || r.name === populatePath);
+        if (!rel) continue;
+
+        const targetColName = buildCollectionName(projectId, rel.toCollection);
+
+        if (rel.type === 'many-to-many') {
+            // Many-to-many: fromField holds an array of IDs
+            pipeline.push({
+                $lookup: {
+                    from: targetColName,
+                    localField: rel.fromField,
+                    foreignField: '_id',
+                    as: populatePath
+                }
+            });
+        } else {
+            // One-to-one / one-to-many / many-to-one: fromField holds a single ID
+            pipeline.push({
+                $lookup: {
+                    from: targetColName,
+                    localField: rel.fromField,
+                    foreignField: '_id',
+                    as: populatePath
+                }
+            });
+
+            // For single-reference types, unwrap the array to a single object
+            if (rel.type === 'many-to-one' || rel.type === 'one-to-one') {
+                pipeline.push({
+                    $unwind: {
+                        path: `$${populatePath}`,
+                        preserveNullAndEmptyArrays: true
+                    }
+                });
+            }
+        }
+    }
+
+    const col = db.collection(colName);
+    return await col.aggregate(pipeline).toArray();
+};
+
+// ─── Count total documents ────────────────────────────────────────────────────
 const count = async (projectId, collectionName, query = {}) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
     return await col.countDocuments(query);
 };
 
-// GET one document by its _id
+// ─── GET one document by ID ───────────────────────────────────────────────────
 const getById = async (projectId, collectionName, id) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
@@ -56,13 +123,13 @@ const getById = async (projectId, collectionName, id) => {
     return await col.findOne({ _id: objectId });
 };
 
-// POST — insert a new document, injecting server-side timestamps
+// ─── POST — insert a new document ─────────────────────────────────────────────
 const create = async (projectId, collectionName, data) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
 
     const doc = { ...data, createdAt: new Date(), updatedAt: new Date() };
-    
+
     try {
         const result = await col.insertOne(doc);
         return { _id: result.insertedId, ...doc };
@@ -76,7 +143,7 @@ const create = async (projectId, collectionName, data) => {
     }
 };
 
-// PUT — partially update a document using $set
+// ─── PUT — update a document ──────────────────────────────────────────────────
 const updateById = async (projectId, collectionName, id, data) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
@@ -100,7 +167,7 @@ const updateById = async (projectId, collectionName, id, data) => {
     }
 };
 
-// DELETE — remove a document by ID
+// ─── DELETE — remove a document ───────────────────────────────────────────────
 const deleteById = async (projectId, collectionName, id) => {
     const db = getNativeDB();
     const col = db.collection(buildCollectionName(projectId, collectionName));
@@ -112,4 +179,4 @@ const deleteById = async (projectId, collectionName, id) => {
     return result.deletedCount;
 };
 
-module.exports = { getAll, getById, create, updateById, deleteById, count };
+module.exports = { getAll, getWithPopulate, getById, create, updateById, deleteById, count };
