@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -28,16 +29,16 @@ const edgeTypes = { relationshipEdge: RelationshipEdge };
 export default function VisualStudio() {
   const dispatch = useDispatch();
   const { showToast } = useToast();
-  
+
   const { items: projects, loading: projectsLoading } = useSelector(state => state.projects);
   const { items: schemas, loading: schemasLoading } = useSelector(state => state.schemas);
-  
+
   const [selectedProjectId, setSelectedProjectId] = useState('');
-  
+
   // Panels toggling state
   const [showLeftPanel, setShowLeftPanel] = useState(true);
   const [showRightPanel, setShowRightPanel] = useState(true);
-  
+
   // React Flow state
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -62,12 +63,12 @@ export default function VisualStudio() {
         // Fallback grid position if no nodePosition saved
         const x = schema.nodePosition?.x ?? (index % 3) * 380 + 80;
         const y = schema.nodePosition?.y ?? Math.floor(index / 3) * 320 + 80;
-        
+
         return {
           id: schema._id,
           type: 'customSchemaNode',
           position: { x, y },
-          data: { 
+          data: {
             collectionName: schema.collectionName,
             fields: schema.fields || [],
             relationships: schema.relationships || []
@@ -93,7 +94,7 @@ export default function VisualStudio() {
             }
           });
         }
-        
+
         // Legacy ObjectId references
         if (schema.fields) {
           schema.fields.forEach(field => {
@@ -113,7 +114,7 @@ export default function VisualStudio() {
           });
         }
       });
-      
+
       setNodes(initialNodes);
       setEdges(initialEdges);
     } else {
@@ -126,7 +127,7 @@ export default function VisualStudio() {
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     []
   );
-  
+
   const onEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     []
@@ -161,7 +162,7 @@ export default function VisualStudio() {
       };
     });
     setNodes(arrangedNodes);
-    
+
     // Auto-save new positions
     arrangedNodes.forEach(node => {
       dispatch(updateSchema({
@@ -179,16 +180,16 @@ export default function VisualStudio() {
         <div className="flex items-center gap-4">
           <Sparkles className="w-6 h-6 text-(--accent-neon)" />
           <h2 className="text-xl font-bold text-(--text-main)">Visual Schema Designer</h2>
-          
+
           <div className="flex ml-4 gap-2">
-            <button 
+            <button
               onClick={() => setShowLeftPanel(!showLeftPanel)}
               className={`p-2 rounded-lg border transition-colors ${showLeftPanel ? 'bg-(--accent-neon)/10 border-(--accent-neon)/30 text-(--accent-neon)' : 'bg-(--bg-card) border-(--border-glass) text-(--text-muted) hover:text-(--text-main)'}`}
               title="Toggle Feature Overview"
             >
               <Layers className="w-4 h-4" />
             </button>
-            <button 
+            <button
               onClick={() => setShowRightPanel(!showRightPanel)}
               className={`p-2 rounded-lg border transition-colors ${showRightPanel ? 'bg-(--accent-neon)/10 border-(--accent-neon)/30 text-(--accent-neon)' : 'bg-(--bg-card) border-(--border-glass) text-(--text-muted) hover:text-(--text-main)'}`}
               title="Toggle Schema Guide"
@@ -197,7 +198,7 @@ export default function VisualStudio() {
             </button>
           </div>
         </div>
-        
+
         <div className="w-64">
           <select
             className="input-glass w-full"
@@ -206,7 +207,7 @@ export default function VisualStudio() {
           >
             <option value="">Select a Project...</option>
             {projects.map(p => (
-              <option key={p._id} value={p._id}>{p.name}</option>
+              <option key={p._id} value={p._id}>{p.projectName}</option>
             ))}
           </select>
         </div>
@@ -214,9 +215,9 @@ export default function VisualStudio() {
 
       {/* Main Workspace Area */}
       <div className="flex-1 flex overflow-hidden relative">
-        
+
         {/* Left Panel */}
-        <div className={`transition-all duration-300 ease-in-out shrink-0 border-r border-(--border-glass) bg-(--bg-dark)/80 backdrop-blur-md overflow-y-auto custom-scrollbar flex flex-col ${showLeftPanel ? 'w-[260px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}>
+        {/* <div className={`transition-all duration-300 ease-in-out shrink-0 border-r border-(--border-glass) bg-(--bg-dark)/80 backdrop-blur-md overflow-y-auto custom-scrollbar flex flex-col ${showLeftPanel ? 'w-[260px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}>
           <div className="p-4 flex items-center justify-between border-b border-(--border-glass)">
             <h3 className="font-bold text-(--text-main) flex items-center gap-2">
               <Info className="w-4 h-4 text-(--accent-neon)" />
@@ -226,7 +227,7 @@ export default function VisualStudio() {
               <X className="w-4 h-4" />
             </button>
           </div>
-          
+
           <div className="p-4 space-y-6 flex-1">
             <section>
               <h4 className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3">Field Types</h4>
@@ -241,7 +242,7 @@ export default function VisualStudio() {
                 <li className="flex items-center gap-3 text-sm text-(--text-main)"><MapPin className="w-4 h-4 text-red-400" /> <span>GeoPoint</span></li>
               </ul>
             </section>
-            
+
             <section>
               <h4 className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3">Relationship Types</h4>
               <div className="space-y-2">
@@ -266,7 +267,7 @@ export default function VisualStudio() {
 
             <section>
               <h4 className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3">Quick Actions</h4>
-              <button 
+              <button
                 onClick={handleAutoLayout}
                 className="w-full btn-glass py-2 flex items-center justify-center gap-2 text-sm"
               >
@@ -275,20 +276,20 @@ export default function VisualStudio() {
               </button>
             </section>
           </div>
-          
+
           <div className="p-4 border-t border-(--border-glass)">
             <a href="/docs" className="text-sm text-(--accent-neon) hover:underline flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               Learn More
             </a>
           </div>
-        </div>
+        </div> */}
 
         {/* Center Canvas */}
         <div className="flex-1 relative bg-(--bg-dark)">
           {!selectedProjectId ? (
             <div className="absolute inset-0 flex items-center justify-center bg-(--bg-dark)/50 z-10">
-              <EmptyState 
+              <EmptyState
                 icon={<Database />}
                 title="No Project Selected"
                 description="Select a project from the top dropdown to view its schema architecture."
@@ -318,8 +319,8 @@ export default function VisualStudio() {
           >
             <Background color="var(--border-glass)" gap={16} size={1} />
             <Controls className="bg-(--bg-card) border border-(--border-glass) fill-(--text-main)" />
-            <MiniMap 
-              nodeColor="var(--accent-neon)" 
+            <MiniMap
+              nodeColor="var(--accent-neon)"
               maskColor="rgba(0, 0, 0, 0.7)"
               className="bg-(--bg-card) border border-(--border-glass)"
             />
@@ -332,7 +333,7 @@ export default function VisualStudio() {
         </div>
 
         {/* Right Panel */}
-        <div className={`transition-all duration-300 ease-in-out shrink-0 border-l border-(--border-glass) bg-(--bg-dark)/80 backdrop-blur-md overflow-y-auto custom-scrollbar flex flex-col ${showRightPanel ? 'w-[280px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}>
+        {/* <div className={`transition-all duration-300 ease-in-out shrink-0 border-l border-(--border-glass) bg-(--bg-dark)/80 backdrop-blur-md overflow-y-auto custom-scrollbar flex flex-col ${showRightPanel ? 'w-[280px] opacity-100' : 'w-0 opacity-0 overflow-hidden border-none'}`}>
           <div className="p-4 flex items-center justify-between border-b border-(--border-glass)">
             <h3 className="font-bold text-(--text-main) flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-(--accent-neon)" />
@@ -342,16 +343,16 @@ export default function VisualStudio() {
               <X className="w-4 h-4" />
             </button>
           </div>
-          
+
           <div className="p-4 space-y-6">
             <section>
               <h4 className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3">How Relationships Work</h4>
               <p className="text-sm text-(--text-main) leading-relaxed">
-                Define relationships to automatically generate Mongoose <code className="bg-(--bg-card) px-1 rounded text-(--accent-purple)">populate()</code> queries. 
+                Define relationships to automatically generate Mongoose <code className="bg-(--bg-card) px-1 rounded text-(--accent-purple)">populate()</code> queries.
                 Using the <code className="bg-(--bg-card) px-1 rounded">fromField</code> mapping to <code className="bg-(--bg-card) px-1 rounded">toCollection</code> allows for deep nested fetching via your REST APIs.
               </p>
             </section>
-            
+
             <section>
               <h4 className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3">Validation</h4>
               <ul className="space-y-2 text-sm text-(--text-main)">
@@ -389,8 +390,8 @@ export default function VisualStudio() {
               </div>
             </section>
           </div>
-        </div>
-        
+        </div> */}
+
       </div>
     </div>
   );
