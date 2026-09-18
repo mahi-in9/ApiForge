@@ -124,8 +124,6 @@ export default function SchemaBuilder() {
     showToast('Endpoint copied to clipboard!', 'success');
   };
 
-  console.log(projects)
-
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Project Selector */}
