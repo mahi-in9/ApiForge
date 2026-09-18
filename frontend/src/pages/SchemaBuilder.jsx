@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProjects } from '../store/slices/projectSlice';
@@ -29,10 +30,10 @@ const initialField = {
 export default function SchemaBuilder() {
   const dispatch = useDispatch();
   const { showToast } = useToast();
-  
+
   const { items: projects, loading: projectsLoading } = useSelector(state => state.projects);
   const { items: schemas, loading: schemasLoading, error: schemasError } = useSelector(state => state.schemas);
-  
+
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [editingSchema, setEditingSchema] = useState(null);
   const [collectionName, setCollectionName] = useState('');
@@ -51,7 +52,7 @@ export default function SchemaBuilder() {
     }
   }, [selectedProjectId, dispatch]);
 
-  const resetForm = () => {
+  function resetForm() {
     setEditingSchema(null);
     setCollectionName('');
     setFields([{ ...initialField }]);
@@ -100,7 +101,7 @@ export default function SchemaBuilder() {
       }
       resetForm();
     } catch (err) {
-      showToast(schemasError || 'Failed to save collection', 'error');
+      showToast(err || 'Failed to save collection', 'error');
     }
   };
 
@@ -113,7 +114,7 @@ export default function SchemaBuilder() {
           resetForm();
         }
       } catch (err) {
-        showToast('Failed to delete collection', 'error');
+        showToast(err || 'Failed to delete collection', 'error');
       }
     }
   };
@@ -122,6 +123,8 @@ export default function SchemaBuilder() {
     navigator.clipboard.writeText(text);
     showToast('Endpoint copied to clipboard!', 'success');
   };
+
+  console.log(projects)
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -140,11 +143,13 @@ export default function SchemaBuilder() {
                 className="input-glass w-full"
                 value={selectedProjectId}
                 onChange={(e) => setSelectedProjectId(e.target.value)}
+                placeholder="select a project"
               >
-                <option value="">Select a Project...</option>
+                <option value="" className='text-white'>Select a Project...</option>
                 {projects.map(p => (
-                  <option key={p._id} value={p._id}>{p.name}</option>
+                  <option key={p._id} value={p._id} className="" >{p.projectName}</option>
                 ))}
+
               </select>
             </div>
           </GlassCard>
@@ -154,7 +159,7 @@ export default function SchemaBuilder() {
       <div className="flex-1 flex overflow-hidden p-6 pt-4 gap-6">
         {!selectedProjectId ? (
           <div className="flex-1 flex items-center justify-center">
-            <EmptyState 
+            <EmptyState
               icon={<Database />}
               title="No Project Selected"
               description="Please select a project from the dropdown above to start building schemas."
@@ -173,11 +178,11 @@ export default function SchemaBuilder() {
                     </button>
                   </div>
                 )}
-                
+
                 <h3 className="text-xl font-bold text-(--text-main) mb-6">
                   {editingSchema ? 'Update Collection' : 'Define New Collection'}
                 </h3>
-                
+
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                   <div>
                     <label className="block text-sm font-medium text-(--text-muted) mb-2">Collection Name</label>
@@ -222,29 +227,29 @@ export default function SchemaBuilder() {
                           </div>
                           <div className="col-span-4 flex items-center gap-4 text-sm text-(--text-muted)">
                             <label className="flex items-center gap-2 cursor-pointer hover:text-(--accent-neon) transition-colors">
-                              <input 
-                                type="checkbox" 
+                              <input
+                                type="checkbox"
                                 checked={field.required}
                                 onChange={(e) => handleFieldChange(index, 'required', e.target.checked)}
-                                className="accent-(--accent-neon)" 
+                                className="accent-(--accent-neon)"
                               />
                               Required
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer hover:text-(--accent-neon) transition-colors">
-                              <input 
-                                type="checkbox" 
+                              <input
+                                type="checkbox"
                                 checked={field.unique}
                                 onChange={(e) => handleFieldChange(index, 'unique', e.target.checked)}
-                                className="accent-(--accent-neon)" 
+                                className="accent-(--accent-neon)"
                               />
                               Unique
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer hover:text-(--accent-neon) transition-colors">
-                              <input 
-                                type="checkbox" 
+                              <input
+                                type="checkbox"
                                 checked={field.index}
                                 onChange={(e) => handleFieldChange(index, 'index', e.target.checked)}
-                                className="accent-(--accent-neon)" 
+                                className="accent-(--accent-neon)"
                               />
                               Indexed
                             </label>
@@ -335,7 +340,7 @@ export default function SchemaBuilder() {
                         </div>
                       </div>
                     ))}
-                    
+
                     <button
                       type="button"
                       onClick={handleAddField}
@@ -355,9 +360,9 @@ export default function SchemaBuilder() {
               {/* Relationship Panel shown only when a schema is selected or created */}
               {(editingSchema || schemas.length > 0) && (
                 <div className="animate-fade-up" style={{ animationDelay: '0.1s' }}>
-                  <RelationshipPanel 
-                    schema={editingSchema || (schemas.length > 0 ? schemas[0] : null)} 
-                    allSchemas={schemas} 
+                  <RelationshipPanel
+                    schema={editingSchema || (schemas.length > 0 ? schemas[0] : null)}
+                    allSchemas={schemas}
                   />
                 </div>
               )}
@@ -375,7 +380,7 @@ export default function SchemaBuilder() {
               {schemasLoading ? (
                 <SkeletonList count={3} />
               ) : schemas.length === 0 ? (
-                <EmptyState 
+                <EmptyState
                   icon={<Database className="w-12 h-12" />}
                   title="No collections yet"
                   description="Define your first collection to generate REST APIs instantly."
@@ -393,13 +398,13 @@ export default function SchemaBuilder() {
                           </h4>
                         </div>
                         <div className="flex items-center gap-2">
-                          <button 
+                          <button
                             onClick={() => handleEditClick(schema)}
                             className="p-2 text-(--text-muted) hover:text-(--accent-neon) hover:bg-(--accent-neon)/10 rounded-lg transition-colors"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDelete(schema._id)}
                             className="p-2 text-(--text-muted) hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
                           >
@@ -412,7 +417,7 @@ export default function SchemaBuilder() {
                         <div className="truncate text-sm font-mono text-(--text-muted) mr-4">
                           <span className="text-(--accent-neon)">Endpoint:</span> {endpoint}
                         </div>
-                        <button 
+                        <button
                           onClick={() => copyToClipboard(endpoint)}
                           className="p-1.5 text-(--text-muted) hover:text-(--text-main) hover:bg-(--bg-card) rounded-md transition-colors shrink-0"
                           title="Copy Endpoint"
@@ -449,18 +454,17 @@ export default function SchemaBuilder() {
                             </div>
                           </div>
                         )}
-                        
+
                         <div>
                           <p className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-2">Auto-Generated Methods</p>
                           <div className="flex flex-wrap gap-2">
                             {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map(method => (
-                              <span key={method} className={`px-2 py-0.5 text-[10px] font-bold rounded ${
-                                method === 'GET' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                              <span key={method} className={`px-2 py-0.5 text-[10px] font-bold rounded ${method === 'GET' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
                                 method === 'POST' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                                method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
-                                method === 'PATCH' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
-                                'bg-red-500/20 text-red-400 border border-red-500/30'
-                              }`}>
+                                  method === 'PUT' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' :
+                                    method === 'PATCH' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
+                                      'bg-red-500/20 text-red-400 border border-red-500/30'
+                                }`}>
                                 {method}
                               </span>
                             ))}
