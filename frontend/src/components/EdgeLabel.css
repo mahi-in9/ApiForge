@@ -1,0 +1,15 @@
+/* EdgeLabel / RelationshipEdge Component */
+/* Note: stroke color and badge color are dynamic (from data), kept inline in JSX */
+
+.edge-label-badge {
+  position: absolute;
+  pointer-events: all;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  cursor: default;
+  white-space: nowrap;
+  /* color, background, border, and transform are dynamic — kept inline */
+}

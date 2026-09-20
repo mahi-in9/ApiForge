@@ -1,0 +1,35 @@
+/* SkeletonCard Component */
+.skeleton-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skeleton-card__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-card__tags {
+  display: flex;
+  gap: 8px;
+}
+
+/* SkeletonList */
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* SkeletonGrid */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}

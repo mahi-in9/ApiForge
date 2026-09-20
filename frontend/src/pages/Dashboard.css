@@ -1,0 +1,249 @@
+/* Dashboard Page */
+.dashboard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 36px;
+}
+
+.dashboard__title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-main);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.dashboard__subtitle {
+  color: var(--text-muted);
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+}
+
+.dashboard__error {
+  color: var(--accent-red);
+  padding: 12px 16px;
+  background: rgba(248,81,73,0.08);
+  border: 1px solid rgba(248,81,73,0.2);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  font-size: 0.875rem;
+}
+
+.dashboard__loading {
+  color: var(--accent-blue);
+  font-size: 0.875rem;
+}
+
+.dashboard__empty {
+  text-align: center;
+  padding: 56px 24px;
+  border: 1px dashed var(--border-bright);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+}
+
+.dashboard__empty-title {
+  color: var(--text-main);
+  margin: 16px 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.dashboard__empty-desc {
+  color: var(--text-muted);
+  margin: 0 0 24px 0;
+  font-size: 0.875rem;
+}
+
+/* Create project form */
+.project-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.project-form--centered {
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.project-form__input {
+  flex: 1;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.project-form__input::placeholder {
+  color: var(--text-subtle);
+}
+
+.project-form__input:focus {
+  border-color: var(--accent-blue);
+}
+
+.project-form__btn {
+  background: transparent;
+  color: var(--accent-blue);
+  border: 1px solid var(--accent-blue);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.project-form__btn:hover:not(:disabled) {
+  background: rgba(56,139,253,0.1);
+}
+
+.project-form__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Projects grid */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+/* Project card */
+.project-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.project-card__name {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 1rem;
+  font-weight: 700;
+  padding-right: 10px;
+  word-break: break-word;
+}
+
+.project-card__delete {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-subtle);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+
+.project-card__delete:hover:not(:disabled) {
+  color: var(--accent-red);
+}
+
+.project-card__delete:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.project-card__api-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 0 0 6px 0;
+  font-weight: 500;
+}
+
+.project-card__api-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  background: var(--bg-dark);
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.project-card__api-value {
+  flex: 1;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-card__icon-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-subtle);
+  cursor: pointer;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+
+.project-card__icon-btn:hover {
+  color: var(--accent-blue);
+}
+
+.project-card__icon-btn--copied {
+  color: var(--accent-green);
+}
+
+.project-card__copied-msg {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--accent-green);
+}
+
+.project-card__footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.project-card__badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.project-card__badge--active {
+  color: var(--accent-green);
+  background: rgba(63,185,80,0.1);
+  border-color: rgba(63,185,80,0.25);
+}
+
+.project-card__badge--inactive {
+  color: var(--accent-red);
+  background: rgba(248,81,73,0.1);
+  border-color: rgba(248,81,73,0.25);
+}

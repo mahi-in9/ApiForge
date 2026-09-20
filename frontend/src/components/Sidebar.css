@@ -2,47 +2,43 @@
 .sidebar {
   width: 240px;
   height: 100vh;
-  background-color: rgba(10, 12, 18, 0.92);
-  border-right: 1px solid var(--border-glass);
-  backdrop-filter: blur(24px);
-  padding: 20px 12px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0;
   top: 0;
   z-index: 100;
-  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.25s ease;
   overflow: hidden;
 }
 
 .sidebar-collapsed {
-  width: 64px;
+  width: 60px;
 }
 
 /* ─── Logo ──────────────────────────────────────────────────────────────────── */
 .sidebar-logo {
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--text-main);
-  margin-bottom: 32px;
-  padding-left: 10px;
+  margin-bottom: 28px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
   gap: 10px;
   white-space: nowrap;
-  overflow: hidden;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
-.sidebar-logo .neon-dot {
-  width: 9px;
-  height: 9px;
-  background-color: var(--accent-neon);
+.sidebar-logo .logo-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-blue);
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 12px var(--accent-neon), 0 0 24px rgba(0, 240, 255, 0.3);
-  animation: pulse 2s ease-in-out infinite;
 }
 
 /* ─── Navigation ────────────────────────────────────────────────────────────── */
@@ -51,6 +47,7 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
+  gap: 2px;
 }
 
 /* ─── Nav Item ──────────────────────────────────────────────────────────────── */
@@ -58,14 +55,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 9px 12px;
   color: var(--text-muted);
   text-decoration: none;
-  border-radius: 10px;
-  transition: all 0.18s ease;
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
   cursor: pointer;
-  margin-bottom: 2px;
-  position: relative;
   white-space: nowrap;
   overflow: hidden;
   border: none;
@@ -73,20 +68,21 @@
   font-size: 0.875rem;
   font-weight: 500;
   font-family: var(--font-sans);
+  width: 100%;
 }
 
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background: var(--bg-dark);
   color: var(--text-main);
 }
 
 .nav-item.active {
-  background-color: rgba(0, 240, 255, 0.07);
-  color: var(--text-main);
-  border-left: 2px solid var(--accent-neon);
-  box-shadow: inset 40px 0 30px -30px rgba(0, 240, 255, 0.08);
+  background: rgba(56, 139, 253, 0.1);
+  color: var(--accent-blue);
+  border-left: 2px solid var(--accent-blue);
 }
 
+/* ─── Nav Icon ──────────────────────────────────────────────────────────────── */
 .nav-icon {
   display: flex;
   align-items: center;
@@ -95,6 +91,7 @@
   width: 20px;
 }
 
+/* ─── Nav Label Group ───────────────────────────────────────────────────────── */
 .nav-label-group {
   display: flex;
   align-items: center;
@@ -107,9 +104,25 @@
   text-overflow: ellipsis;
 }
 
-/* ─── Bottom section ────────────────────────────────────────────────────────── */
+/* ─── Nav Badge ─────────────────────────────────────────────────────────────── */
+.nav-badge {
+  padding: 1px 6px;
+  background: rgba(56, 139, 253, 0.15);
+  border: 1px solid rgba(56, 139, 253, 0.3);
+  border-radius: 10px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+/* ─── Bottom Section ────────────────────────────────────────────────────────── */
 .sidebar-bottom {
   margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid var(--border-glass);
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }

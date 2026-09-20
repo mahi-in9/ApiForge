@@ -1,213 +1,128 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Key, Database, Link, MapPin, Hash, CheckSquare, Type, Calendar, List, Box, GitGraph } from 'lucide-react';
+import './SchemaNode.css';
 
-// ─── Field type icon map ──────────────────────────────────────────────────────
 const getIcon = (type) => {
   switch (type) {
-    case 'String':   return <Type size={13} color="var(--text-muted)" />;
-    case 'Number':   return <Hash size={13} color="var(--text-muted)" />;
-    case 'Boolean':  return <CheckSquare size={13} color="var(--text-muted)" />;
-    case 'ObjectId': return <Link size={13} color="var(--accent-neon)" />;
-    case 'Date':     return <Calendar size={13} color="var(--text-muted)" />;
-    case 'Array':    return <List size={13} color="var(--text-muted)" />;
-    case 'Object':   return <Box size={13} color="var(--text-muted)" />;
+    case 'String':   return <Type size={12} color="var(--text-subtle)" />;
+    case 'Number':   return <Hash size={12} color="var(--text-subtle)" />;
+    case 'Boolean':  return <CheckSquare size={12} color="var(--text-subtle)" />;
+    case 'ObjectId': return <Link size={12} color="var(--accent-blue)" />;
+    case 'Date':     return <Calendar size={12} color="var(--text-subtle)" />;
+    case 'Array':    return <List size={12} color="var(--text-subtle)" />;
+    case 'Object':   return <Box size={12} color="var(--text-subtle)" />;
     case 'GeoPoint':
-    case 'Address':  return <MapPin size={13} color="var(--text-muted)" />;
-    default:         return <Database size={13} color="var(--text-muted)" />;
+    case 'Address':  return <MapPin size={12} color="var(--text-subtle)" />;
+    default:         return <Database size={12} color="var(--text-subtle)" />;
   }
 };
 
-// ─── Relationship type color map ──────────────────────────────────────────────
 const relColor = (type) => {
   const map = {
     'one-to-one':   '#60a5fa',
-    'one-to-many':  '#4ade80',
-    'many-to-one':  '#f59e0b',
-    'many-to-many': '#c084fc',
+    'one-to-many':  '#3fb950',
+    'many-to-one':  '#d29922',
+    'many-to-many': '#bc8cff',
   };
-  return map[type] || 'var(--accent-neon)';
+  return map[type] || 'var(--accent-blue)';
 };
 
-// ─── SchemaNode ───────────────────────────────────────────────────────────────
 const SchemaNode = ({ data }) => {
   const { collectionName, fields = [], relationships = [] } = data;
   const relCount = relationships.length;
 
   return (
-    <div
-      style={{
-        width: '300px',
-        background: 'var(--bg-card)',
-        border: '1px solid rgba(0, 240, 255, 0.35)',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,240,255,0.05)',
-        overflow: 'hidden',
-        position: 'relative',
-      }}
-    >
+    <div className="schema-node">
       {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(0,240,255,0.12), rgba(138,43,226,0.06))',
-        padding: '12px 16px',
-        borderBottom: '1px solid var(--border-glass)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '8px',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Database size={15} color="var(--accent-neon)" />
-          <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#fff', fontFamily: 'var(--font-mono)' }}>
-            {collectionName}
-          </h3>
+      <div className="schema-node__header">
+        <div className="schema-node__title-group">
+          <Database size={14} color="var(--accent-blue)" />
+          <h3 className="schema-node__name">{collectionName}</h3>
         </div>
-
-        {/* Relationship count badge */}
         {relCount > 0 && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            background: 'rgba(0,240,255,0.1)',
-            border: '1px solid rgba(0,240,255,0.2)',
-            borderRadius: 'var(--radius-full)',
-            padding: '2px 8px',
-            fontSize: '0.7rem',
-            color: 'var(--accent-neon)',
-            fontWeight: 600,
-          }}>
-            <GitGraph size={11} />
+          <div className="schema-node__rel-badge">
+            <GitGraph size={10} />
             {relCount}
           </div>
         )}
       </div>
 
-      {/* Target handle (incoming connections) */}
+      {/* Target handle */}
       <Handle
         type="target"
         position={Position.Left}
-        style={{
-          background: 'var(--accent-neon)',
-          width: '12px',
-          height: '12px',
-          left: '-6px',
-          border: '2px solid rgba(0,0,0,0.5)',
-        }}
+        style={{ background: 'var(--accent-blue)', width: '10px', height: '10px', left: '-5px', border: '2px solid var(--bg-dark)' }}
       />
 
-      {/* Fields list */}
-      <div style={{ padding: '6px 0' }}>
+      {/* Fields */}
+      <div className="schema-node__fields">
         {fields.map((field, index) => (
           <div
             key={index}
+            className="schema-node__field"
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '6px 16px',
-              borderBottom: index < fields.length - 1 ? '1px solid rgba(255,255,255,0.02)' : 'none',
-              background: field.isUnique ? 'rgba(245,158,11,0.04)' : field.fieldType === 'ObjectId' ? 'rgba(0,240,255,0.03)' : 'transparent',
-              position: 'relative',
+              borderBottom: index < fields.length - 1 ? '1px solid rgba(48,54,61,0.6)' : 'none',
+              background: field.isUnique
+                ? 'rgba(210,153,34,0.04)'
+                : field.fieldType === 'ObjectId'
+                ? 'rgba(56,139,253,0.04)'
+                : 'transparent',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {field.isUnique ? (
-                <Key size={12} color="#f59e0b" title="Unique" />
-              ) : (
-                getIcon(field.fieldType)
-              )}
-              <span style={{
-                color: field.isRequired ? '#fff' : 'var(--text-muted)',
-                fontSize: '0.82rem',
-                fontFamily: 'var(--font-mono)',
-              }}>
+            <div className="schema-node__field-left">
+              {field.isUnique ? <Key size={11} color="var(--accent-amber)" title="Unique" /> : getIcon(field.fieldType)}
+              <span
+                className="schema-node__field-name"
+                style={{ color: field.isRequired ? 'var(--text-main)' : 'var(--text-muted)' }}
+              >
                 {field.fieldName}
-                {field.isRequired && <span style={{ color: 'var(--accent-red)', marginLeft: '2px' }}>*</span>}
+                {field.isRequired && <span className="schema-node__field-required">*</span>}
               </span>
             </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{
-                fontSize: '0.72rem',
-                color: field.fieldType === 'ObjectId' ? 'var(--accent-neon)' : 'var(--text-subtle)',
-                fontFamily: 'var(--font-mono)',
-              }}>
+            <div className="schema-node__field-right">
+              <span
+                className="schema-node__field-type"
+                style={{ color: field.fieldType === 'ObjectId' ? 'var(--accent-blue)' : 'var(--text-subtle)' }}
+              >
                 {field.referenceTo ? `→ ${field.referenceTo}` : field.fieldType}
               </span>
               {field.isIndexed && !field.isUnique && (
-                <span style={{ fontSize: '0.65rem', color: '#f59e0b' }} title="Indexed">⚡</span>
+                <span className="schema-node__field-indexed" title="Indexed">⚡</span>
               )}
             </div>
-
-            {/* Per-field source handle for ObjectId fields */}
             {field.fieldType === 'ObjectId' && (
               <Handle
                 type="source"
                 position={Position.Right}
                 id={field.fieldName}
-                style={{
-                  background: 'var(--accent-neon)',
-                  width: '10px',
-                  height: '10px',
-                  right: '-5px',
-                  top: `${50}%`,
-                  border: '2px solid rgba(0,0,0,0.5)',
-                }}
+                style={{ background: 'var(--accent-blue)', width: '9px', height: '9px', right: '-5px', top: '50%', border: '2px solid var(--bg-dark)' }}
               />
             )}
           </div>
         ))}
-
         {fields.length === 0 && (
-          <div style={{ padding: '12px 16px', color: 'var(--text-subtle)', fontSize: '0.8rem', fontStyle: 'italic' }}>
-            No fields defined
-          </div>
+          <div className="schema-node__empty">No fields defined</div>
         )}
       </div>
 
-      {/* Relationships section (compact) */}
+      {/* Relationships */}
       {relationships.length > 0 && (
-        <div style={{
-          borderTop: '1px solid var(--border-glass)',
-          padding: '8px 0',
-          background: 'rgba(0,0,0,0.1)',
-        }}>
+        <div className="schema-node__rels">
           {relationships.map((rel, i) => (
-            <div key={rel._id || i} style={{
-              padding: '4px 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}>
-              <span style={{
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                color: relColor(rel.type),
-                fontFamily: 'var(--font-mono)',
-                padding: '1px 5px',
-                background: `${relColor(rel.type)}18`,
-                borderRadius: '3px',
-              }}>
+            <div key={rel._id || i} className="schema-node__rel-row">
+              <span
+                className="schema-node__rel-type"
+                style={{ color: relColor(rel.type), background: `${relColor(rel.type)}18` }}
+              >
                 {rel.type === 'one-to-one' ? '1:1' : rel.type === 'one-to-many' ? '1:N' : rel.type === 'many-to-one' ? 'N:1' : 'M:N'}
               </span>
-              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                → {rel.toCollection}
-              </span>
-              {/* Relationship source handle */}
+              <span className="schema-node__rel-target">→ {rel.toCollection}</span>
               <Handle
                 type="source"
                 position={Position.Right}
                 id={`rel-${rel._id || i}`}
-                style={{
-                  background: relColor(rel.type),
-                  width: '10px',
-                  height: '10px',
-                  right: '-5px',
-                  top: '50%',
-                  border: '2px solid rgba(0,0,0,0.5)',
-                  opacity: 0.85,
-                }}
+                style={{ background: relColor(rel.type), width: '9px', height: '9px', right: '-5px', top: '50%', border: '2px solid var(--bg-dark)', opacity: 0.9 }}
               />
             </div>
           ))}

@@ -8,7 +8,7 @@ import './Login.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error, isAuthenticated } = useSelector((state) => state.auth);
@@ -29,36 +29,36 @@ const Login = () => {
     <div className="login-container">
       <GlassCard className="login-card">
         <div className="login-logo">
-          <div className="neon-dot"></div>
+          <div className="login-logo-dot"></div>
           <h2>API-Forge</h2>
         </div>
         <form onSubmit={handleSubmit} className="login-form">
           {error && <div className="error-message">{error}</div>}
           <div className="form-group">
             <label>Email</label>
-            <input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              required 
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
           </div>
-          <button type="submit" disabled={isLoading} className="neon-button">
+          <button type="submit" disabled={isLoading} className="login-btn">
             {isLoading ? 'Authenticating...' : 'Access Command Center'}
           </button>
-          
-          <div style={{ textAlign: 'center', marginTop: '15px', fontSize: '0.9rem' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Need a developer account? </span>
-            <Link to="/register" style={{ color: 'var(--accent-neon)', textDecoration: 'none' }}>Initialize Profile</Link>
+
+          <div className="auth-link-row">
+            <span>Need a developer account? </span>
+            <Link to="/register">Initialize Profile</Link>
           </div>
         </form>
       </GlassCard>

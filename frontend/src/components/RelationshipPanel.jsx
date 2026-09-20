@@ -3,12 +3,13 @@ import { useDispatch } from 'react-redux';
 import { addRelationship, deleteRelationship } from '../store/slices/schemaSlice';
 import { useToast } from '../context/ToastContext';
 import { GitGraph, Plus, Trash2, ChevronDown, ChevronRight, Info } from 'lucide-react';
+import './RelationshipPanel.css';
 
 const RELATIONSHIP_TYPES = [
-  { value: 'one-to-one',  label: '1:1 — One to One',   desc: 'e.g. User → Profile' },
-  { value: 'one-to-many', label: '1:N — One to Many',   desc: 'e.g. User → Orders' },
-  { value: 'many-to-one', label: 'N:1 — Many to One',   desc: 'e.g. Orders → User' },
-  { value: 'many-to-many',label: 'M:N — Many to Many',  desc: 'e.g. Products ↔ Tags' },
+  { value: 'one-to-one',   label: '1:1 — One to One',   desc: 'e.g. User → Profile' },
+  { value: 'one-to-many',  label: '1:N — One to Many',   desc: 'e.g. User → Orders' },
+  { value: 'many-to-one',  label: 'N:1 — Many to One',   desc: 'e.g. Orders → User' },
+  { value: 'many-to-many', label: 'M:N — Many to Many',  desc: 'e.g. Products ↔ Tags' },
 ];
 
 const DELETE_STRATEGIES = [
@@ -17,35 +18,21 @@ const DELETE_STRATEGIES = [
   { value: 'set-null',  label: 'Set Null',  desc: 'Set the foreign key to null on related records' },
 ];
 
-const EMPTY_FORM = {
-  name: '',
-  type: 'one-to-many',
-  fromField: '',
-  toCollection: '',
-  toField: '',
-  onDelete: 'restrict',
-  label: '',
-};
+const EMPTY_FORM = { name: '', type: 'one-to-many', fromField: '', toCollection: '', toField: '', onDelete: 'restrict', label: '' };
 
 const RelationshipTypeTag = ({ type }) => {
   const map = {
-    'one-to-one':  { label: '1:1', color: '#60a5fa' },
-    'one-to-many': { label: '1:N', color: '#4ade80' },
-    'many-to-one': { label: 'N:1', color: '#f59e0b' },
-    'many-to-many':{ label: 'M:N', color: '#c084fc' },
+    'one-to-one':   { label: '1:1', color: '#60a5fa' },
+    'one-to-many':  { label: '1:N', color: '#3fb950' },
+    'many-to-one':  { label: 'N:1', color: '#d29922' },
+    'many-to-many': { label: 'M:N', color: '#bc8cff' },
   };
   const cfg = map[type] || { label: '?', color: 'var(--text-muted)' };
   return (
-    <span style={{
-      padding: '2px 8px',
-      borderRadius: 'var(--radius-full)',
-      background: `${cfg.color}18`,
-      border: `1px solid ${cfg.color}44`,
-      color: cfg.color,
-      fontSize: '0.75rem',
-      fontWeight: 700,
-      fontFamily: 'var(--font-mono)',
-    }}>
+    <span
+      className="rel-type-tag"
+      style={{ background: `${cfg.color}18`, border: `1px solid ${cfg.color}44`, color: cfg.color }}
+    >
       {cfg.label}
     </span>
   );
@@ -53,22 +40,12 @@ const RelationshipTypeTag = ({ type }) => {
 
 const DeleteStrategyBadge = ({ strategy }) => {
   const map = {
-    restrict: { color: '#f87171', label: 'RESTRICT' },
-    cascade:  { color: '#f59e0b', label: 'CASCADE' },
-    'set-null':{ color: '#8b949e', label: 'SET NULL' },
+    restrict:  { color: 'var(--accent-red)',   label: 'RESTRICT' },
+    cascade:   { color: 'var(--accent-amber)',  label: 'CASCADE' },
+    'set-null':{ color: 'var(--text-muted)',    label: 'SET NULL' },
   };
   const cfg = map[strategy] || { color: 'var(--text-muted)', label: strategy };
-  return (
-    <span style={{
-      fontSize: '0.7rem',
-      fontWeight: 700,
-      color: cfg.color,
-      fontFamily: 'var(--font-mono)',
-      letterSpacing: '0.05em',
-    }}>
-      {cfg.label}
-    </span>
-  );
+  return <span className="rel-strategy-badge" style={{ color: cfg.color }}>{cfg.label}</span>;
 };
 
 const RelationshipPanel = ({ schema, allSchemas }) => {
@@ -81,7 +58,6 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
 
   const relationships = schema?.relationships || [];
   const fields = schema?.fields || [];
-
   const handleChange = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
 
   const handleSubmit = async (e) => {
@@ -89,15 +65,11 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
     if (!form.name.trim()) return toast.error('Relationship name is required');
     if (!form.fromField) return toast.error('Please select a source field');
     if (!form.toCollection) return toast.error('Please select a target collection');
-
     setIsSubmitting(true);
     try {
       await dispatch(addRelationship({
         apiSchemaId: schema._id,
-        relationship: {
-          ...form,
-          populatePath: form.name.trim().toLowerCase().replace(/\s+/g, '_'),
-        },
+        relationship: { ...form, populatePath: form.name.trim().toLowerCase().replace(/\s+/g, '_') },
       })).unwrap();
       toast.success(`Relationship '${form.name}' added successfully`);
       setForm(EMPTY_FORM);
@@ -122,110 +94,60 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
   const otherSchemas = allSchemas.filter(s => s._id !== schema._id);
 
   return (
-    <div style={{ marginTop: '24px', border: '1px solid var(--border-glass)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
-      {/* Header toggle */}
-      <button
-        type="button"
-        onClick={() => setIsOpen(v => !v)}
-        style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '14px 20px',
-          background: 'rgba(0,240,255,0.04)',
-          border: 'none',
-          cursor: 'pointer',
-          color: 'var(--text-main)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <GitGraph size={18} color="var(--accent-neon)" />
-          <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Relationships</span>
+    <div className="rel-panel">
+      <button type="button" onClick={() => setIsOpen(v => !v)} className="rel-panel__toggle">
+        <div className="rel-panel__toggle-left">
+          <GitGraph size={16} color="var(--accent-blue)" />
+          <span className="rel-panel__label">Relationships</span>
           {relationships.length > 0 && (
-            <span style={{
-              background: 'var(--accent-neon-dim)',
-              color: 'var(--accent-neon)',
-              borderRadius: 'var(--radius-full)',
-              padding: '1px 8px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-            }}>
-              {relationships.length}
-            </span>
+            <span className="rel-panel__count">{relationships.length}</span>
           )}
         </div>
-        {isOpen ? <ChevronDown size={16} color="var(--text-muted)" /> : <ChevronRight size={16} color="var(--text-muted)" />}
+        {isOpen
+          ? <ChevronDown size={15} color="var(--text-muted)" />
+          : <ChevronRight size={15} color="var(--text-muted)" />
+        }
       </button>
 
       {isOpen && (
-        <div style={{ padding: '16px 20px' }}>
-          {/* Info banner */}
-          <div style={{
-            display: 'flex', gap: '8px', alignItems: 'flex-start',
-            padding: '10px 14px',
-            background: 'rgba(0,240,255,0.04)',
-            border: '1px solid rgba(0,240,255,0.15)',
-            borderRadius: 'var(--radius-md)',
-            marginBottom: '16px',
-            fontSize: '0.8rem',
-            color: 'var(--text-muted)',
-          }}>
-            <Info size={14} color="var(--accent-neon)" style={{ flexShrink: 0, marginTop: '1px' }} />
+        <div className="rel-panel__body">
+          <div className="rel-panel__info">
+            <Info size={13} color="var(--accent-blue)" style={{ flexShrink: 0, marginTop: '1px' }} />
             <span>
               Relationships link collections and power the{' '}
-              <code style={{ color: 'var(--accent-neon)', fontFamily: 'var(--font-mono)' }}>?populate=</code>
-              {' '}query parameter in generated APIs.{' '}
+              <code>?populate=</code>{' '}query parameter in generated APIs.
               Deletion strategies control what happens to related records when a parent is deleted.
             </span>
           </div>
 
-          {/* Existing relationships */}
           {relationships.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+            <div className="rel-list">
               {relationships.map(rel => (
-                <div
-                  key={rel._id}
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '10px 14px',
-                    background: 'rgba(0,0,0,0.15)',
-                    border: '1px solid var(--border-glass)',
-                    borderRadius: 'var(--radius-md)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <div key={rel._id} className="rel-item">
+                  <div className="rel-item__info">
                     <RelationshipTypeTag type={rel.type} />
-                    <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-main)' }}>{rel.name}</span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                      {rel.fromField} → {rel.toCollection}
-                    </span>
+                    <span className="rel-item__name">{rel.name}</span>
+                    <span className="rel-item__path">{rel.fromField} → {rel.toCollection}</span>
                     <DeleteStrategyBadge strategy={rel.onDelete} />
                   </div>
                   <button
                     type="button"
+                    className="rel-item__delete"
                     onClick={() => handleDelete(rel._id, rel.name)}
-                    style={{ background: 'none', border: 'none', color: 'var(--accent-red)', cursor: 'pointer', padding: '4px', display: 'flex' }}
                     title="Remove relationship"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Add relationship form */}
           {showForm ? (
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                {/* Relationship name */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Relationship Name *
-                  </label>
+            <form onSubmit={handleSubmit} className="rel-form">
+              <div className="rel-form__grid">
+                <div className="rel-form__field">
+                  <label>Relationship Name *</label>
                   <input
                     className="input-glass"
                     placeholder="e.g. user_orders"
@@ -234,12 +156,8 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
                     required
                   />
                 </div>
-
-                {/* Type */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Relationship Type *
-                  </label>
+                <div className="rel-form__field">
+                  <label>Relationship Type *</label>
                   <select
                     className="input-glass"
                     value={form.type}
@@ -250,16 +168,10 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.72rem', color: 'var(--text-subtle)' }}>
-                    {RELATIONSHIP_TYPES.find(t => t.value === form.type)?.desc}
-                  </p>
+                  <p className="rel-form__hint">{RELATIONSHIP_TYPES.find(t => t.value === form.type)?.desc}</p>
                 </div>
-
-                {/* From field */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Source Field (in this collection) *
-                  </label>
+                <div className="rel-form__field">
+                  <label>Source Field (in this collection) *</label>
                   <select
                     className="input-glass"
                     value={form.fromField}
@@ -273,12 +185,8 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
                     ))}
                   </select>
                 </div>
-
-                {/* Target collection */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Target Collection *
-                  </label>
+                <div className="rel-form__field">
+                  <label>Target Collection *</label>
                   <select
                     className="input-glass"
                     value={form.toCollection}
@@ -292,17 +200,11 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
                     ))}
                   </select>
                   {otherSchemas.length === 0 && (
-                    <p style={{ margin: '4px 0 0 0', fontSize: '0.72rem', color: 'var(--accent-red)' }}>
-                      No other collections in this project yet.
-                    </p>
+                    <p className="rel-form__hint rel-form__hint--error">No other collections in this project yet.</p>
                   )}
                 </div>
-
-                {/* On Delete */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    On Delete Strategy
-                  </label>
+                <div className="rel-form__field">
+                  <label>On Delete Strategy</label>
                   <select
                     className="input-glass"
                     value={form.onDelete}
@@ -313,16 +215,10 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
                       <option key={s.value} value={s.value}>{s.label}</option>
                     ))}
                   </select>
-                  <p style={{ margin: '4px 0 0 0', fontSize: '0.72rem', color: 'var(--text-subtle)' }}>
-                    {DELETE_STRATEGIES.find(s => s.value === form.onDelete)?.desc}
-                  </p>
+                  <p className="rel-form__hint">{DELETE_STRATEGIES.find(s => s.value === form.onDelete)?.desc}</p>
                 </div>
-
-                {/* Optional label */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                    Display Label (optional)
-                  </label>
+                <div className="rel-form__field">
+                  <label>Display Label (optional)</label>
                   <input
                     className="input-glass"
                     placeholder="e.g. Has many orders"
@@ -331,8 +227,7 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
                   />
                 </div>
               </div>
-
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div className="rel-form__actions">
                 <button
                   type="submit"
                   className="btn-primary"
@@ -351,13 +246,8 @@ const RelationshipPanel = ({ schema, allSchemas }) => {
               </div>
             </form>
           ) : (
-            <button
-              type="button"
-              onClick={() => setShowForm(true)}
-              className="btn-glass"
-              style={{ width: '100%', justifyContent: 'center', borderStyle: 'dashed' }}
-            >
-              <Plus size={16} /> Add Relationship
+            <button type="button" onClick={() => setShowForm(true)} className="btn-glass rel-add-btn">
+              <Plus size={15} /> Add Relationship
             </button>
           )}
         </div>

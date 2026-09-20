@@ -1,0 +1,181 @@
+/* RelationshipPanel */
+.rel-panel {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.rel-panel__toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 18px;
+  background: var(--bg-dark);
+  border: none;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: background 0.15s;
+}
+
+.rel-panel__toggle:hover {
+  background: var(--bg-card-hover);
+}
+
+.rel-panel__toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rel-panel__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.rel-panel__count {
+  background: rgba(56, 139, 253, 0.12);
+  color: var(--accent-blue);
+  border-radius: var(--radius-full);
+  padding: 1px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.rel-panel__body {
+  padding: 16px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.rel-panel__info {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: rgba(56, 139, 253, 0.04);
+  border: 1px solid rgba(56, 139, 253, 0.12);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.rel-panel__info code {
+  color: var(--accent-blue);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+
+.rel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.rel-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.rel-item__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rel-item__name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.rel-item__path {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.rel-item__delete {
+  background: none;
+  border: none;
+  color: var(--text-subtle);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+
+.rel-item__delete:hover {
+  color: var(--accent-red);
+}
+
+/* Relationship type tag */
+.rel-type-tag {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  /* color, background, border are dynamic — kept inline */
+}
+
+/* Delete strategy badge */
+.rel-strategy-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  /* color is dynamic — kept inline */
+}
+
+/* Add relationship form */
+.rel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.rel-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.rel-form__field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.rel-form__hint {
+  margin: 4px 0 0 0;
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+}
+
+.rel-form__hint--error {
+  color: var(--accent-red);
+}
+
+.rel-form__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rel-add-btn {
+  width: 100%;
+  justify-content: center;
+  border-style: dashed !important;
+}

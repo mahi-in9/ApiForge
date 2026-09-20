@@ -16,25 +16,24 @@ const Navbar = () => {
 
   return (
     <header className="navbar">
-      <div className="navbar-search" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-        <Search size={18} color="var(--text-muted)" style={{ position: 'absolute', left: '12px' }} />
-        <input 
-          type="text" 
-          placeholder="Search environments..." 
-          className="search-input" 
+      <div className="navbar-search">
+        <Search size={16} className="search-icon" />
+        <input
+          type="text"
+          placeholder="Search environments..."
+          className="search-input"
           value={searchQuery || ''}
           onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-          style={{ paddingLeft: '40px' }}
         />
       </div>
-      
+
       <div className="navbar-profile">
         <div className="user-info">
-          <User size={18} className="user-icon" />
-          <span className="user-name">{user?.name || user?.title || 'Developer'}</span>
+          <User size={16} className="user-icon" />
+          <span>{user?.name || user?.title || 'Developer'}</span>
         </div>
         <button onClick={handleLogout} className="logout-button" title="Logout">
-          <LogOut size={18} />
+          <LogOut size={16} />
         </button>
       </div>
     </header>

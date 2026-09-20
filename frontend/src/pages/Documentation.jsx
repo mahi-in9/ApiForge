@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { BookOpen, Search, ChevronRight, Database, GitGraph, Play, Zap, HelpCircle, CheckSquare, Terminal, Code2, Shield, Star } from 'lucide-react';
 import GlassCard from '../components/GlassCard';
+import './Documentation.css';
 
 // ─── Documentation content ────────────────────────────────────────────────────
 
 const DOCS = [
   {
     id: 'quick-start',
-    icon: <Zap size={18} color="#4ade80" />,
+    icon: <Zap size={18} color="#3fb950" />,
     title: 'Quick Start',
     content: `
 ## Get Your First API Running in 2 Minutes
@@ -47,7 +48,7 @@ Use the built-in **API Playground** to make requests without leaving API Forge.
   },
   {
     id: 'relationships',
-    icon: <GitGraph size={18} color="#c084fc" />,
+    icon: <GitGraph size={18} color="#bc8cff" />,
     title: 'Relationships',
     content: `
 ## Collection Relationships
@@ -120,7 +121,7 @@ The **Visual Schema Designer** displays relationships as edges between collectio
   },
   {
     id: 'schema-designer',
-    icon: <Database size={18} color="#60a5fa" />,
+    icon: <Database size={18} color="#388bfd" />,
     title: 'Schema Designer',
     content: `
 ## Visual Schema Designer
@@ -162,7 +163,7 @@ The Visual Schema Designer gives you a canvas view of your entire data model.
   },
   {
     id: 'testing-apis',
-    icon: <Play size={18} color="#4ade80" />,
+    icon: <Play size={18} color="#3fb950" />,
     title: 'Testing APIs',
     content: `
 ## API Playground
@@ -206,7 +207,7 @@ Switch to the **Code** tab to get ready-to-copy snippets in:
   },
   {
     id: 'best-practices',
-    icon: <Star size={18} color="#f59e0b" />,
+    icon: <Star size={18} color="#d29922" />,
     title: 'Best Practices',
     content: `
 ## Best Practices
@@ -291,14 +292,19 @@ No. Relationships are scoped within a single project. Cross-project data access 
 ];
 
 // ─── Markdown renderer (simple, no external lib) ──────────────────────────────
+const inlineFormat = (text) =>
+  text
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text-main);font-weight:600">$1</strong>')
+    .replace(/`(.+?)`/g, '<code style="background:var(--bg-dark);padding:2px 6px;border:1px solid var(--border);border-radius:4px;font-family:var(--font-mono);font-size:0.85em;color:var(--accent-blue)">$1</code>')
+    .replace(/✅/g, '<span style="color:var(--accent-green)">✅</span>')
+    .replace(/⚠️/g, '<span style="color:var(--accent-amber)">⚠️</span>');
+
 const renderContent = (markdown) => {
-  // Very simple renderer for headings, code blocks, tables, and basic formatting
   const lines = markdown.split('\n');
   const elements = [];
   let i = 0;
   let inCodeBlock = false;
   let codeLines = [];
-  let inTable = false;
   let tableRows = [];
 
   while (i < lines.length) {
@@ -308,7 +314,7 @@ const renderContent = (markdown) => {
     if (line.trim().startsWith('```')) {
       if (inCodeBlock) {
         elements.push(
-          <div key={`code-${i}`} className="code-block" style={{ marginBottom: '16px' }}>
+          <div key={`code-${i}`} className="code-block docs-code-block">
             <pre style={{ margin: 0, fontSize: '0.82rem', lineHeight: 1.7, color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>
               {codeLines.join('\n')}
             </pre>
@@ -338,22 +344,20 @@ const renderContent = (markdown) => {
       const headers = tableRows[0].split('|').slice(1, -1).map(h => h.trim());
       const dataRows = tableRows.slice(2).map(r => r.split('|').slice(1, -1).map(c => c.trim()));
       elements.push(
-        <div key={`table-${i}`} style={{ overflowX: 'auto', marginBottom: '20px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+        <div key={`table-${i}`} className="docs-table-wrap">
+          <table className="docs-table">
             <thead>
-              <tr style={{ background: 'rgba(0,240,255,0.06)' }}>
+              <tr>
                 {headers.map((h, hi) => (
-                  <th key={hi} style={{ padding: '10px 14px', textAlign: 'left', color: 'var(--accent-neon)', fontWeight: 600, borderBottom: '1px solid var(--border-glass-bright)', whiteSpace: 'nowrap' }}>
-                    {h}
-                  </th>
+                  <th key={hi} className="docs-th">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {dataRows.map((row, ri) => (
-                <tr key={ri} style={{ borderBottom: '1px solid var(--border-glass)' }}>
+                <tr key={ri}>
                   {row.map((cell, ci) => (
-                    <td key={ci} style={{ padding: '9px 14px', color: 'var(--text-muted)', verticalAlign: 'top' }}
+                    <td key={ci} className="docs-td"
                       dangerouslySetInnerHTML={{ __html: inlineFormat(cell) }}
                     />
                   ))}
@@ -368,22 +372,14 @@ const renderContent = (markdown) => {
 
     // Headings
     if (line.startsWith('## ')) {
-      elements.push(
-        <h2 key={`h2-${i}`} style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', margin: '28px 0 12px 0', paddingBottom: '8px', borderBottom: '1px solid var(--border-glass)' }}>
-          {line.slice(3)}
-        </h2>
-      );
+      elements.push(<h2 key={`h2-${i}`} className="docs-h2">{line.slice(3)}</h2>);
     } else if (line.startsWith('### ')) {
-      elements.push(
-        <h3 key={`h3-${i}`} style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-main)', margin: '20px 0 8px 0' }}>
-          {line.slice(4)}
-        </h3>
-      );
+      elements.push(<h3 key={`h3-${i}`} className="docs-h3">{line.slice(4)}</h3>);
     } else if (line.trim() === '') {
       // skip
     } else {
       elements.push(
-        <p key={`p-${i}`} style={{ color: 'var(--text-muted)', lineHeight: 1.75, margin: '0 0 10px 0', fontSize: '0.9rem' }}
+        <p key={`p-${i}`} className="docs-p"
           dangerouslySetInnerHTML={{ __html: inlineFormat(line) }}
         />
       );
@@ -393,14 +389,6 @@ const renderContent = (markdown) => {
   }
 
   return elements;
-};
-
-const inlineFormat = (text) => {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text-main);font-weight:600">$1</strong>')
-    .replace(/`(.+?)`/g, '<code style="background:rgba(0,0,0,0.3);padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.85em;color:var(--accent-neon)">$1</code>')
-    .replace(/✅/g, '<span style="color:#4ade80">✅</span>')
-    .replace(/⚠️/g, '<span style="color:#f59e0b">⚠️</span>');
 };
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -420,91 +408,62 @@ const Documentation = () => {
   const activeDoc = DOCS.find(d => d.id === activeId) || filtered[0];
 
   return (
-    <div style={{ width: '100%', maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+    <div className="docs">
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
-        <BookOpen size={28} color="var(--accent-neon)" />
+      <div className="docs__header">
+        <BookOpen size={26} color="var(--accent-blue)" />
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)' }}>
-            Documentation
-          </h1>
-          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Everything you need to master API Forge
-          </p>
+          <h1 className="docs__title">Documentation</h1>
+          <p className="docs__subtitle">Everything you need to master API Forge</p>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '24px', alignItems: 'start' }}>
+      <div className="docs__layout">
 
         {/* Sidebar */}
-        <div style={{ position: 'sticky', top: '0' }}>
-          {/* Search */}
-          <div style={{ position: 'relative', marginBottom: '16px' }}>
-            <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+        <div className="docs__sidebar">
+          <div className="docs__search-wrap">
+            <Search size={13} className="docs__search-icon" />
             <input
-              className="input-glass"
+              className="input-glass docs__search"
               placeholder="Search docs..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ paddingLeft: '36px', fontSize: '0.85rem' }}
             />
           </div>
 
-          <GlassCard style={{ padding: '8px' }}>
+          <GlassCard style={{ padding: '6px' }}>
             {filtered.map(doc => (
               <button
                 key={doc.id}
                 onClick={() => { setActiveId(doc.id); setSearch(''); }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 'var(--radius-md)',
-                  border: 'none',
-                  background: activeId === doc.id ? 'var(--accent-neon-dim)' : 'transparent',
-                  color: activeId === doc.id ? 'var(--accent-neon)' : 'var(--text-muted)',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  fontWeight: activeId === doc.id ? 600 : 400,
-                  textAlign: 'left',
-                  transition: 'all 0.18s ease',
-                }}
-                onMouseEnter={e => { if (activeId !== doc.id) e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
-                onMouseLeave={e => { if (activeId !== doc.id) e.currentTarget.style.background = 'transparent'; }}
+                className={`docs__nav-btn ${activeId === doc.id ? 'docs__nav-btn--active' : ''}`}
               >
                 {doc.icon}
                 {doc.title}
-                {activeId === doc.id && <ChevronRight size={14} style={{ marginLeft: 'auto' }} />}
+                {activeId === doc.id && <ChevronRight size={14} className="docs__nav-icon-wrap" />}
               </button>
             ))}
           </GlassCard>
         </div>
 
         {/* Content */}
-        <GlassCard style={{ padding: '36px' }} className="animate-fade-up">
+        <GlassCard className="docs__content-card animate-fade-up" style={{ padding: '36px' }}>
           {activeDoc ? (
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px', paddingBottom: '20px', borderBottom: '1px solid var(--border-glass)' }}>
-                <div style={{
-                  width: '40px', height: '40px',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'var(--accent-neon-dim)',
-                  border: '1px solid rgba(0,240,255,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
+              <div className="docs__content-header">
+                <div className="docs__content-icon">
                   {activeDoc.icon}
                 </div>
-                <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-main)' }}>
+                <h1 className="docs__content-title">
                   {activeDoc.title}
                 </h1>
               </div>
               {renderContent(activeDoc.content)}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '48px', color: 'var(--text-muted)' }}>
+            <div className="docs__empty">
               No results for "{search}". Try a different search term.
             </div>
           )}
