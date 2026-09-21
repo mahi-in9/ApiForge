@@ -66,7 +66,7 @@ const projectSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.items = action.payload.projects || action.payload || []; 
+        state.items = action.payload?.projects || action.payload || []; 
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.isLoading = false;
@@ -79,7 +79,9 @@ const projectSlice = createSlice({
       })
       .addCase(createProject.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.items.push(action.payload.project || action.payload);
+        if (action.payload) {
+          state.items.push(action.payload.project || action.payload);
+        }
       })
       .addCase(createProject.rejected, (state, action) => {
         state.isLoading = false;

@@ -130,8 +130,10 @@ const schemaSlice = createSlice({
       })
       .addCase(updateSchema.fulfilled, (state, action) => {
         state.isLoading = false;
-        const idx = state.items.findIndex(s => s._id === action.payload._id);
-        if (idx !== -1) state.items[idx] = action.payload;
+        if (action.payload && action.payload._id) {
+          const idx = state.items.findIndex(s => s._id === action.payload._id);
+          if (idx !== -1) state.items[idx] = action.payload;
+        }
       })
       .addCase(updateSchema.rejected, (state, action) => {
         state.isLoading = false;
@@ -140,11 +142,13 @@ const schemaSlice = createSlice({
 
       // ── Add Relationship ───────────────────────────────────────────────────
       .addCase(addRelationship.fulfilled, (state, action) => {
-        const { apiSchemaId, relationship } = action.payload;
-        const schema = state.items.find(s => s._id === apiSchemaId);
-        if (schema) {
-          if (!schema.relationships) schema.relationships = [];
-          schema.relationships.push(relationship);
+        if (action.payload) {
+          const { apiSchemaId, relationship } = action.payload;
+          const schema = state.items.find(s => s._id === apiSchemaId);
+          if (schema) {
+            if (!schema.relationships) schema.relationships = [];
+            schema.relationships.push(relationship);
+          }
         }
       })
       .addCase(addRelationship.rejected, (state, action) => {
@@ -153,10 +157,12 @@ const schemaSlice = createSlice({
 
       // ── Delete Relationship ────────────────────────────────────────────────
       .addCase(deleteRelationship.fulfilled, (state, action) => {
-        const { apiSchemaId, relId } = action.payload;
-        const schema = state.items.find(s => s._id === apiSchemaId);
-        if (schema && schema.relationships) {
-          schema.relationships = schema.relationships.filter(r => r._id !== relId);
+        if (action.payload) {
+          const { apiSchemaId, relId } = action.payload;
+          const schema = state.items.find(s => s._id === apiSchemaId);
+          if (schema && schema.relationships) {
+            schema.relationships = schema.relationships.filter(r => r._id !== relId);
+          }
         }
       })
       .addCase(deleteRelationship.rejected, (state, action) => {

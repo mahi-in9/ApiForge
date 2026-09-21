@@ -88,8 +88,11 @@ const dynamicValidator = async (req, res, next) => {
 
                 // 3. Advanced Validations (Enums, Length, Size)
                 if (field.fieldType === 'String' && typeof value === 'string') {
-                    if (field.enumValues && field.enumValues.length > 0 && !field.enumValues.includes(value)) {
-                        errors.push(`'${field.fieldName}' must be one of: [${field.enumValues.join(', ')}].`);
+                    const validEnums = field.enumValues && Array.isArray(field.enumValues) 
+                        ? field.enumValues.filter(e => typeof e === 'string' && e.trim() !== '') 
+                        : [];
+                    if (validEnums.length > 0 && !validEnums.includes(value)) {
+                        errors.push(`'${field.fieldName}' must be one of: [${validEnums.join(', ')}].`);
                     }
                     if (field.minLength !== null && field.minLength !== undefined && value.length < field.minLength) {
                         errors.push(`'${field.fieldName}' must be at least ${field.minLength} characters long.`);
